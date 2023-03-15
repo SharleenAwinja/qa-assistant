@@ -7,6 +7,11 @@ import VoidedOrders from "./VoidedOrders";
 function Orders() {
   const [openTab, setOpenTab] = useState(1);
 
+  const tabContent = [
+    { tabName: "Active Orders", componentName: <ActiveOrders /> },
+    { tabName: "Void Orders", componentName: <VoidedOrders /> },
+  ];
+
   const openTabStyle =
     "inline-block p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 mt-2";
   const closeTabStyle =
@@ -18,28 +23,22 @@ function Orders() {
       <SideNavBar />
       <div className="">
         <ul className="ml-[25%] text-sm font-medium text-center text-gray-500 dark:text-gray-400 dark:border-gray-700 flex flex-wrap -mb-px md:w-[60%]">
-          <button
-            className={openTab === 1 ? openTabStyle : closeTabStyle}
-            onClick={() => {
-              setOpenTab(1);
-            }}
-          >
-            Active Orders
-          </button>
-          <button
-            className={openTab === 2 ? openTabStyle : closeTabStyle}
-            onClick={() => setOpenTab(2)}
-          >
-            Void Orders
-          </button>
+          {tabContent.map((tab, index) => (
+            <button
+              key={index}
+              className={openTab === index ? openTabStyle : closeTabStyle}
+              onClick={() => setOpenTab(index)}
+            >
+              {tab.tabName}
+            </button>
+          ))}
         </ul>
         <div>
-          <div className={openTab === 1 ? "block" : "hidden"}>
-            <ActiveOrders></ActiveOrders>
-          </div>
-          <div className={openTab === 2 ? "block" : "hidden"}>
-            <VoidedOrders></VoidedOrders>
-          </div>
+          {tabContent.map((tab, index) => (
+            <div key={index} className={openTab === index ? "block" : "hidden"}>
+              {tab.componentName}
+            </div>
+          ))}
         </div>
       </div>
     </>
