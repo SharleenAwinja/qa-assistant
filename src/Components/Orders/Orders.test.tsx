@@ -10,7 +10,7 @@ import { BrowserRouter } from "react-router-dom";
 import { describe, it, vi } from "vitest";
 import "whatwg-fetch";
 import ActiveOrders from "./ActiveOrders";
-import { mockOrders, mockPatient, mockVoidOrder } from "./Test.resource";
+import { mockOrders, mockPatient, mockVoidOrder } from "./resource.mock";
 import VoidedOrders from "./VoidedOrders";
 
 const fetchActiveOrders = rest.get(
@@ -51,16 +51,19 @@ describe("Active Orders", () => {
     JSON.stringify({ user: { privileges: [] } })
   );
 
-  it("displays patient name as part of the heading", () => {
+  it("displays patient name as part of the heading", async () => {
     render(
       <BrowserRouter>
         <ActiveOrders />
       </BrowserRouter>
     );
-    const patientName = screen.queryAllByText(
-      /Active orders for Betty Williams/i
-    );
-    expect(patientName).toBeTruthy();
+    const totalOrders = await screen.findByText("1 order found");
+    if (totalOrders) {
+      const heading = screen.getByRole("heading", {
+        name: /Active Orders for Betty Williams/i,
+      });
+      expect(heading).toBeInTheDocument();
+    }
   });
 
   it("displays the total number of orders when orders are available", async () => {
@@ -141,16 +144,19 @@ describe("Voided Orders", () => {
     JSON.stringify({ user: { privileges: [] } })
   );
 
-  it("displays patient name as part of the heading", () => {
+  it("displays patient name as part of the heading", async () => {
     render(
       <BrowserRouter>
         <VoidedOrders />
       </BrowserRouter>
     );
-    const patientName = screen.queryAllByText(
-      /Voided Orders for Betty Williams/i
-    );
-    expect(patientName).toBeTruthy();
+    const totalOrders = await screen.findByText("1 order found");
+    if (totalOrders) {
+      const heading = screen.getByRole("heading", {
+        name: /Voided Orders for Betty Williams/i,
+      });
+      expect(heading).toBeInTheDocument();
+    }
   });
 
   it("displays the total number of orders when orders are available", async () => {
