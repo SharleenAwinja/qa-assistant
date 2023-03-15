@@ -4,7 +4,7 @@ import { Order } from "./Orders";
 import {
   getUser,
   fetchActiveOrders,
-  resetVoidedOrders,
+  fetchVoidedOrders,
   gettingPatientName,
 } from "./Order.resource";
 import { ClipLoader } from "react-spinners";
@@ -80,7 +80,7 @@ function ActiveOrders() {
               );
               setOrders(currentOrders);
 
-              newVoidOrders = await resetVoidedOrders(userUuid);
+              newVoidOrders = await fetchVoidedOrders(userUuid);
             } else if (response.status === 504) {
               swal("Request is taking too long, try refreshing the page", {
                 icon: "error",
