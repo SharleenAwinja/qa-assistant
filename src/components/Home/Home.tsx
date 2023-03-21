@@ -1,11 +1,45 @@
-import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Header from "../Header/Header";
-import swal from "sweetalert";
 
 const Home = () => {
-  const menuItems = [];
-
+  const menuItems = [
+    {
+      path: "/patient-search",
+      src: "src/public/search.png",
+      alt: "patient search",
+      title: "Patient Search",
+    },
+    {
+      path: "",
+      src: "src/public/graph.jpeg",
+      alt: "data dump",
+      title: "Data Dump Upload",
+    },
+    {
+      path: "",
+      src: "",
+      alt: "",
+      title: "",
+    },
+    {
+      path: "",
+      src: "",
+      alt: "",
+      title: "",
+    },
+    {
+      path: "",
+      src: "",
+      alt: "",
+      title: "",
+    },
+    {
+      path: "",
+      src: "",
+      alt: "",
+      title: "",
+    },
+  ];
   const cardStyle =
     "rounded-md overflow-hidden shadow-lg bg-white h-56 hover:cursor-pointer transition duration-300 ease-in-out hover:scale-110";
   const textStyle = "text-center font-bold text-xl mt-6";
@@ -19,28 +53,22 @@ const Home = () => {
             <h1>QA Assistant</h1>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mt-12 h-3/4 p-10 mt-2">
-            <div className={cardStyle}>
-              <Link to={"/patient-search"}>
-                <img
-                  className="w-full"
-                  src="src/public/search.png"
-                  alt="patient search"
-                ></img>
-                <h1 className={textStyle}>Patient Search</h1>
-              </Link>
-            </div>
-            <div className={cardStyle}>
-              <img
-                className="w-2/4 h-2/4 sm:ml-16 sm:mr-8 md:ml-8 md:ml-8 lg:ml-16 lg:mr-20 mt-8"
-                src="src/public/graph.jpeg"
-                alt="data dump"
-              ></img>
-              <h1 className={textStyle}>Data Dump Upload</h1>
-            </div>
-            <div className={cardStyle}></div>
-            <div className={cardStyle}></div>
-            <div className={cardStyle}></div>
-            <div className={cardStyle}></div>
+            {menuItems.map((menu, index) =>
+              menu.src ? (
+                <div className={cardStyle} key={index}>
+                  <Link to={menu.path}>
+                    <img
+                      className="w-3/4 h-2/4 sm:ml-10 md:ml-8 lg:ml-7 mt-8"
+                      src={menu.src}
+                      alt={menu.alt}
+                    ></img>
+                    <h1 className={textStyle}>{menu.title}</h1>
+                  </Link>
+                </div>
+              ) : (
+                <div className={cardStyle} key={index}></div>
+              )
+            )}
           </div>
         </div>
       </div>
