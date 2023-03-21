@@ -6,6 +6,7 @@ import Orders from "./components/Orders/Orders.component";
 import Login from "./components/authentication/Login";
 import ProtectedRoutes from "./components/authentication/ProtectedRoutes";
 import PatientInformation from "./components/PatientInformation";
+import Home from "./components/Home/Home";
 
 const App = () => {
   const [currentPatient] = useState<Object[]>([]);
@@ -20,7 +21,8 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route element={<ProtectedRoutes />}>
-            <Route path="/" element={<PatientSearch />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/patient-search" element={<PatientSearch />} />
             <Route path="/patientInfo/:id" element={<PatientInformation />} />
             <Route path="/patient/:id/orders" element={<Orders />} />
           </Route>
