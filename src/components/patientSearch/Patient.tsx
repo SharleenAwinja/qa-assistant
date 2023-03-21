@@ -43,7 +43,7 @@ const PatientSearch = () => {
 
   return (
     <>
-      <Header shouldRenderSearchLink={true} />
+      <Header shouldRenderSearchLink={false} />
       <div className="bg-themeColor overflow-y-auto h-screen pt-10">
         <div className="w-[80%] mx-auto">
           <div className="w-[90%] mx-auto">
