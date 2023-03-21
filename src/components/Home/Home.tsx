@@ -46,7 +46,7 @@ const Home = () => {
 
   return (
     <div className="md:h-screen">
-      <Header />
+      <Header shouldRenderSearchLink={false} />
       <div className="flex items-center justify-center bg-gray-50 lg:h-full pt-3">
         <div className="flex flex-col border-2 w-3/6 h-4/6 md:h-5/6 lg:h-4/6 rounded-md shadow-lg bg-gray-200">
           <div className="text-4xl text-center mt-6 font-bold text-blue-500">

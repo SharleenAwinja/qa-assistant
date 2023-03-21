@@ -6,7 +6,11 @@ import { useNavigate } from "react-router-dom";
 import storage from "../../app/localStorage";
 import { BsSearch } from "react-icons/bs";
 
-const Header = () => {
+interface Props {
+  shouldRenderSearchLink: boolean;
+}
+
+const Header = ({ shouldRenderSearchLink }: Props) => {
   const navigate = useNavigate();
 
   const { user } = storage.loadData();
@@ -36,14 +40,15 @@ const Header = () => {
         </button>
         <nav className="hidden md:block md:mr-12">
           <ul className="md:flex items-center gap-20">
-            <Link
-              to="/patient-search"
-              className="py-2 px-4 flex gap-2 items-center hover:shadow-lg hover:bg-slate-300 p-2 rounded-sm cursor-pointer"
-            >
-              <BsSearch />
-              Patient Search
-            </Link>
-
+            {shouldRenderSearchLink && (
+              <Link
+                to="/patient-search"
+                className="py-2 px-4 flex gap-2 items-center hover:shadow-lg hover:bg-slate-300 p-2 rounded-sm cursor-pointer"
+              >
+                <BsSearch />
+                Patient Search
+              </Link>
+            )}
             <li className="text-sm">
               Logged in as{" "}
               <span className="uppercase">
