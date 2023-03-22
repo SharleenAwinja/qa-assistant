@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppContext, AppContextType } from "./context/AppContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PatientSearch from "./components/patientSearch/Patient";
 import Orders from "./components/Orders/Orders.component";
 import Login from "./components/authentication/Login";
 import ProtectedRoutes from "./components/authentication/ProtectedRoutes";
 import PatientInformation from "./components/PatientInformation";
 import Home from "./components/Home/Home";
+import { CheckSession, DeleteSession } from "./components/ManageSession";
 
 const App = () => {
   const [currentPatient] = useState<Object[]>([]);
@@ -14,7 +15,15 @@ const App = () => {
   const contextValue: AppContextType = {
     currentPatient,
   };
-
+  useEffect(() => {
+    const verifySession = setInterval(async () => {
+      const isSessionActive = await CheckSession()
+      if(isSessionActive ==='false' && window.location.pathname !=="/login"){
+        DeleteSession()
+      }
+    }, 30000);
+    return () => clearInterval(verifySession);
+  }, []);
   return (
     <AppContext.Provider value={contextValue}>
       <Router>
