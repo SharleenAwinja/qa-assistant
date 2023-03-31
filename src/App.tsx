@@ -19,9 +19,12 @@ const App = () => {
   };
   useEffect(() => {
     const verifySession = setInterval(async () => {
-      const isSessionActive = await CheckSession()
-      if(isSessionActive ==='false' && window.location.pathname !=="/login"){
-        DeleteSession()
+      const isSessionActive = await CheckSession();
+      if (
+        isSessionActive === "false" &&
+        window.location.pathname !== "/login"
+      ) {
+        DeleteSession();
       }
     }, 30000);
     return () => clearInterval(verifySession);
@@ -36,8 +39,11 @@ const App = () => {
             <Route path="/patient-search" element={<PatientSearch />} />
             <Route path="/patientInfo/:id" element={<PatientInformation />} />
             <Route path="/patient/:id/orders" element={<Orders />} />
-            <Route path = "/rde"element = {<DisplayPatientReport/>}/>
-            <Route path = "/rde-identifier" element = {<SearchPatientIdentifier/>}/>
+            <Route path="/rde" element={<DisplayPatientReport />} />
+            <Route
+              path="/rde-identifier"
+              element={<SearchPatientIdentifier />}
+            />
           </Route>
         </Routes>
       </Router>
