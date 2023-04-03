@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Header from "../Header/Header";
+import Header from "../layout/Header";
 import { AiOutlineDelete } from "react-icons/ai";
 import storage from "../../app/localStorage";
 import { FaPlus } from "react-icons/fa";

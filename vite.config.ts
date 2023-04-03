@@ -5,7 +5,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/ws": {
-        target: "https://ngx.ampath.or.ke/amrs",
+        target: "https://staging.ampath.or.ke/amrs",
         changeOrigin: true,
         secure: false,
       },

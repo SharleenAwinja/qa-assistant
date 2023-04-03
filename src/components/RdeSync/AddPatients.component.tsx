@@ -1,21 +1,32 @@
-import { useEffect, useState } from "react";
-import { AiOutlineDelete } from "react-icons/ai";
+import { useState } from "react";
+import {
+  AiFillWarning,
+  AiOutlineCloseCircle,
+  AiOutlineDelete,
+} from "react-icons/ai";
+import { TiTick } from "react-icons/ti";
 import storage from "../../app/localStorage";
 import { FaPlus } from "react-icons/fa";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
+import { queuePatients } from "./AddPatients.resources";
+
 const SearchPatientIdentifier = () => {
   const [patientIdentifier, setPatientIdentifier] = useState({
     identifier: "",
   });
+  const [identifiers, setIdentifiers] = useState<string[]>([]);
+  const [isError, setIsError] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   const { identifier } = patientIdentifier;
+
   const onChange = (e: { target: { name: any; value: any } }) => {
     setPatientIdentifier({
       ...patientIdentifier,
       [e.target.name]: e.target.value,
     });
   };
-  const [identifierList, setIdentifierList] = useState<string[]>([]);
 
   const tabulateIdentifier = () => {
     const identifierInput = document.getElementById(
@@ -25,9 +36,9 @@ const SearchPatientIdentifier = () => {
       //remove duplicates
       const formatIdentifiers = new Set(identifier.split(","));
       const newIdentifiers = Array.from(formatIdentifiers).filter(
-        (id) => !identifierList.includes(id)
+        (id) => !identifiers.includes(id)
       );
-      setIdentifierList([...identifierList, ...newIdentifiers]);
+      setIdentifiers([...newIdentifiers]);
       if (identifierInput) {
         identifierInput.value = "";
       }
@@ -61,10 +72,10 @@ const SearchPatientIdentifier = () => {
     );
   }
   const deleteIdentifier = (id: any) => {
-    setIdentifierList(identifierList.filter((existing) => existing !== id));
+    setIdentifiers(identifiers.filter((existing) => existing !== id));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const selectedMonth = (
       document.querySelector(".month-dropdown") as HTMLSelectElement
     ).value;
@@ -77,20 +88,27 @@ const SearchPatientIdentifier = () => {
       0
     ).getDate();
     //convert date to yyyy/mm/dd
-    const reporting_month = new Date(
+    const reportingMonth = new Date(
       `${selectedYear}-${selectedMonth}-${lastDayOfMonth}`
     )
       .toISOString()
       .split("T")[0];
     const { user } = storage.loadData();
-    const user_id = user.uuid;
+    const userId = user.uuid;
     const requestBody = JSON.stringify({
-      identifierList,
-      reporting_month,
-      user_id,
+      identifiers,
+      reportingMonth,
+      userId,
     });
-    console.log(requestBody);
+    const response = await queuePatients(requestBody);
+    if (response.ok) {
+      setSuccess(true);
+      setIdentifiers([]);
+    } else {
+      setIsError(true);
+    }
   };
+
   return (
     <>
       <Header shouldRenderSearchLink={false} />
@@ -139,7 +157,7 @@ const SearchPatientIdentifier = () => {
                 </tr>
               </thead>
               <tbody>
-                {identifierList.map((id, index) => (
+                {identifiers.map((id, index) => (
                   <tr key={index} className="bg-gray-100 hover:bg-gray-300 ">
                     <td className="px-4 py-2 text-center">{index + 1}</td>
                     <td className="px-4 py-2 text-center">{id}</td>
@@ -164,6 +182,38 @@ const SearchPatientIdentifier = () => {
               Submit
             </button>
           </div>
+          {success && (
+            <div className="flex items-center w-full max-w-xs p-4 mx-auto mt-4 text-gray-500 bg-white rounded-lg shadow">
+              <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg">
+                <TiTick />
+              </div>
+              <div className="ml-3 text-sm font-normal">
+                Identifiers successfully added
+              </div>
+              <button
+                className="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
+                onClick={() => setSuccess(false)}
+              >
+                <AiOutlineCloseCircle className="w-6 h-6" />
+              </button>
+            </div>
+          )}
+          {isError && (
+            <div className="flex items-center w-full max-w-xs p-4 mx-auto mt-4 text-gray-500 bg-white rounded-lg shadow">
+              <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg">
+                <AiFillWarning />
+              </div>
+              <div className="ml-3 text-sm font-normal">
+                An error occured while submitting identifiers, please try again
+              </div>
+              <button
+                className="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
+                onClick={() => setIsError(false)}
+              >
+                <AiOutlineCloseCircle className="w-6 h-6" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
       <Footer year={2023} />
