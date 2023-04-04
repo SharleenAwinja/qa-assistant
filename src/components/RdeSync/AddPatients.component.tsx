@@ -1,23 +1,23 @@
 import { useState } from "react";
-import {
-  AiFillWarning,
-  AiOutlineCloseCircle,
-  AiOutlineDelete,
-} from "react-icons/ai";
-import { TiTick } from "react-icons/ti";
+import { useNavigate } from "react-router-dom";
+import { AiOutlineDelete } from "react-icons/ai";
 import storage from "../../app/localStorage";
 import { FaPlus } from "react-icons/fa";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
-import { queuePatients } from "./AddPatients.resources";
+import { queuePatients, setReportingMonth } from "./AddPatients.resources";
+import SuccessToast from "../toasts/SuccessToast";
+import ErrorToast from "../toasts/ErrorToast";
 
-const SearchPatientIdentifier = () => {
+const AddPatientIdentifier = () => {
   const [patientIdentifier, setPatientIdentifier] = useState({
     identifier: "",
   });
   const [identifiers, setIdentifiers] = useState<string[]>([]);
   const [isError, setIsError] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const navigate = useNavigate();
 
   const { identifier } = patientIdentifier;
 
@@ -46,6 +46,7 @@ const SearchPatientIdentifier = () => {
       return;
     }
   };
+
   const currentDate = new Date();
   //month options
   const monthOptions = [];
@@ -76,23 +77,8 @@ const SearchPatientIdentifier = () => {
   };
 
   const handleSubmit = async () => {
-    const selectedMonth = (
-      document.querySelector(".month-dropdown") as HTMLSelectElement
-    ).value;
-    const selectedYear = (
-      document.querySelector(".year-dropdown") as HTMLSelectElement
-    ).value;
-    const lastDayOfMonth = new Date(
-      parseInt(selectedYear),
-      parseInt(selectedMonth),
-      0
-    ).getDate();
-    //convert date to yyyy/mm/dd
-    const reportingMonth = new Date(
-      `${selectedYear}-${selectedMonth}-${lastDayOfMonth}`
-    )
-      .toISOString()
-      .split("T")[0];
+    const reportingMonth = await setReportingMonth();
+
     const { user } = storage.loadData();
     const userId = user.uuid;
     const requestBody = JSON.stringify({
@@ -100,6 +86,7 @@ const SearchPatientIdentifier = () => {
       reportingMonth,
       userId,
     });
+
     const response = await queuePatients(requestBody);
     if (response.ok) {
       setSuccess(true);
@@ -183,42 +170,34 @@ const SearchPatientIdentifier = () => {
             </button>
           </div>
           {success && (
-            <div className="flex items-center w-full max-w-xs p-4 mx-auto mt-4 text-gray-500 bg-white rounded-lg shadow">
-              <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg">
-                <TiTick />
-              </div>
-              <div className="ml-3 text-sm font-normal">
-                Identifiers successfully added
-              </div>
-              <button
-                className="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
-                onClick={() => setSuccess(false)}
-              >
-                <AiOutlineCloseCircle className="w-6 h-6" />
-              </button>
+            <div className="pl-40 mt-4">
+              <SuccessToast
+                message="Identifiers have been added successfully"
+                handleOnClick={() => setSuccess(false)}
+              />
             </div>
           )}
           {isError && (
-            <div className="flex items-center w-full max-w-xs p-4 mx-auto mt-4 text-gray-500 bg-white rounded-lg shadow">
-              <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg">
-                <AiFillWarning />
-              </div>
-              <div className="ml-3 text-sm font-normal">
-                An error occured while submitting identifiers, please try again
-              </div>
-              <button
-                className="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
-                onClick={() => setIsError(false)}
-              >
-                <AiOutlineCloseCircle className="w-6 h-6" />
-              </button>
+            <div className="pl-40 mt-4">
+              <ErrorToast
+                message="An error ocurred while adding identifiers, please try again"
+                handleOnClick={() => setIsError(false)}
+              />
             </div>
           )}
         </div>
+      </div>
+      <div className="grid justify-items-end mr-9 mt-5">
+        <button
+          className="bg-blue-500 text-white hover:bg-blue-600 hover:font-bold py-2 px-5 rounded-lg mr-5"
+          onClick={() => navigate("/moh-731-sync")}
+        >
+          Back to patient list
+        </button>
       </div>
       <Footer year={2023} />
     </>
   );
 };
 
-export default SearchPatientIdentifier;
+export default AddPatientIdentifier;
