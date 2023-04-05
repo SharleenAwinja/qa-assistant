@@ -11,7 +11,6 @@ export const fetchMoh731SyncQueue = async (): Promise<Patient[]> => {
     `/api/rde-sync/queue-patientlist?user_id=${userId}&reporting_month=2021-09-30` //2022-12-31
   );
   const data = await response.json();
-  console.log("data", data);
 
   return data;
 };
