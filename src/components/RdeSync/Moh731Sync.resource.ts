@@ -5,7 +5,6 @@ import { ProcessQueuePayload } from "../../types/Payloads";
 export const fetchMoh731SyncQueue = async (): Promise<Patient[]> => {
   const { user } = storage.loadData();
   const userId = user.uuid;
-  console.log("user", userId);
 
   const response = await fetch(
     `/api/rde-sync/queue-patientlist?user_id=${userId}&reporting_month=2021-09-30` //2022-12-31
