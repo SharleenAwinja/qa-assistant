@@ -88,7 +88,6 @@ const SearchPatientIdentifier = () => {
       reporting_month,
       user_id,
     });
-    console.log(requestBody);
   };
   return (
     <div>

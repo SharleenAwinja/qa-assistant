@@ -2,16 +2,16 @@ import storage from "../../app/localStorage";
 import { Patient } from "../../types/Patient";
 import { ProcessQueuePayload } from "../../types/Payloads";
 
-export const fetchMoh731SyncQueue = async (): Promise<Patient[]> => {
+export const fetchMoh731SyncQueue = async (
+  reportingMonth: string
+): Promise<Patient[]> => {
   const { user } = storage.loadData();
   const userId = user.uuid;
-  console.log("user", userId);
 
   const response = await fetch(
-    `/api/rde-sync/queue-patientlist?user_id=${userId}&reporting_month=2021-09-30` //2022-12-31
+    `/api/rde-sync/queue-patientlist?user_id=${userId}&reporting_month=${reportingMonth}` //2022-12-31
   );
   const data = await response.json();
-  console.log("data", data);
 
   return data;
 };

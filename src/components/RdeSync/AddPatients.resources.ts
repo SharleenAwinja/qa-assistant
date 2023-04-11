@@ -1,4 +1,5 @@
 export const queuePatients = async (requestBody: any) => {
+  console.log("request body", requestBody);
   const response = await fetch("/api/rde-sync/queue", {
     method: "POST",
     headers: {

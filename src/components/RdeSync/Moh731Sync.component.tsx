@@ -8,6 +8,7 @@ import {
   fetchMoh731SyncQueue,
   processQueuedPatients,
 } from "./Moh731Sync.resource";
+import { reportingMonth } from "./AddPatients.component";
 
 const SearchBar: React.FC = () => {
   return (
@@ -131,7 +132,7 @@ const Moh731SyncQueueComponent = () => {
   };
 
   useEffect(() => {
-    fetchMoh731SyncQueue().then(setPatients);
+    fetchMoh731SyncQueue(reportingMonth).then(setPatients);
   }, []);
 
   return (

@@ -9,6 +9,8 @@ import { queuePatients, setReportingMonth } from "./AddPatients.resources";
 import SuccessToast from "../toasts/SuccessToast";
 import ErrorToast from "../toasts/ErrorToast";
 
+let reportingMonth: string;
+
 const AddPatientIdentifier = () => {
   const [patientIdentifier, setPatientIdentifier] = useState({
     identifier: "",
@@ -77,7 +79,7 @@ const AddPatientIdentifier = () => {
   };
 
   const handleSubmit = async () => {
-    const reportingMonth = await setReportingMonth();
+    reportingMonth = await setReportingMonth();
 
     const { user } = storage.loadData();
     const userId = user.uuid;
@@ -200,4 +202,5 @@ const AddPatientIdentifier = () => {
   );
 };
 
+export { reportingMonth };
 export default AddPatientIdentifier;
