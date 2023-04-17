@@ -204,4 +204,5 @@ const AddPatientIdentifier = () => {
   );
 };
 
+export { reportingMonth };
 export default AddPatientIdentifier;
