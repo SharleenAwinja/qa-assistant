@@ -170,10 +170,8 @@ const Moh731SyncQueueComponent = () => {
     index: number
   ) => {
     const { user } = storage.loadData();
-    const userId = user.uuid;
-
     const payload = {
-      userId: userId,
+      userId: user?.uuid,
       reportingMonth: reportingMonth,
       patientIds: [personId],
     };
