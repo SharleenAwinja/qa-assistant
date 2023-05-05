@@ -215,6 +215,36 @@ const Moh731SyncQueueComponent = () => {
     }
   };
 
+  const patientIds = patients.map((patient) => patient.person_id);
+
+  const handleProcessAll = () => {
+    const payload = {
+      userId: 45,
+      reportingMonth: selectedMonth,
+      patientIds: patientIds,
+    };
+
+    const result = processQueuedPatients(payload);
+    console.log(result);
+  };
+
+  const handleFreezeAll = async () => {
+    const { user } = storage.loadData();
+
+    const payload = {
+      userId: user?.uuid,
+      reportingMonth: selectedMonth,
+      patientIds: patientIds,
+    };
+
+    const result = await freezeProcessedPatients(payload);
+
+    if (result === 201) {
+      const allRows = patients.map((patient, index) => index);
+      setFrozenRows([...frozenRows, ...allRows]);
+    }
+  };
+
   useEffect(() => {
     fetchMoh731SyncQueue(selectedMonth).then(setPatients);
 
@@ -242,12 +272,14 @@ const Moh731SyncQueueComponent = () => {
               <button
                 type="button"
                 className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
+                onClick={handleProcessAll}
               >
                 Process All
               </button>
               <button
                 type="button"
                 className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
+                onClick={handleFreezeAll}
               >
                 Freeze All
               </button>
