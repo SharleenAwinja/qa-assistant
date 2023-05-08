@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Patient } from "../../types/Patient";
 import { formatDate } from "../../utils/DateUtil";
@@ -160,17 +160,6 @@ const Calendar: React.FC<calendarProps> = ({
   );
 };
 
-const handleProcessPatient = (personId: number, reportingMonth: string) => {
-  const payload = {
-    userId: 45,
-    reportingMonth: reportingMonth,
-    patientIds: [personId],
-  };
-
-  const result = processQueuedPatients(payload);
-  console.log(result);
-};
-
 const Moh731SyncQueueComponent = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
@@ -179,6 +168,20 @@ const Moh731SyncQueueComponent = () => {
   const [selectedMonth, setSelectedMonth] = useState("2020-01");
 
   const navigate = useNavigate();
+
+  const handleProcessPatient = async (
+    personId: number,
+    reportingMonth: string
+  ) => {
+    const payload = {
+      userId: 45,
+      reportingMonth: reportingMonth,
+      patientIds: [personId],
+    };
+    const result = await processQueuedPatients(payload);
+    await fetchMoh731SyncQueue(selectedMonth).then(setPatients);
+    console.log(result);
+  };
 
   const handleMonthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedMonth(event.target.value);
@@ -196,7 +199,7 @@ const Moh731SyncQueueComponent = () => {
     setSearchItem("");
   };
 
-  const handleFreezePatients = async (
+  const handleFreezePatient = async (
     personId: number,
     reportingMonth: string,
     index: number
@@ -217,7 +220,7 @@ const Moh731SyncQueueComponent = () => {
 
   const patientIds = patients.map((patient) => patient.person_id);
 
-  const handleProcessAll = () => {
+  const handleProcessAll = async () => {
     const payload = {
       userId: 45,
       reportingMonth: selectedMonth,
@@ -225,6 +228,7 @@ const Moh731SyncQueueComponent = () => {
     };
 
     const result = processQueuedPatients(payload);
+    await fetchMoh731SyncQueue(selectedMonth).then(setPatients);
     console.log(result);
   };
 
@@ -252,7 +256,7 @@ const Moh731SyncQueueComponent = () => {
       patient.patient_name.toLowerCase().includes(searchItem.toLowerCase())
     );
     setFilteredPatients(filtered);
-  }, [searchItem, selectedMonth]);
+  }, [searchItem, selectedMonth, patients]);
 
   const data = searchItem ? filteredPatients : patients;
 
@@ -384,7 +388,7 @@ const Moh731SyncQueueComponent = () => {
                         type="button"
                         className="px-3 py-2 text-sm font-medium text-center text-white bg-purple-700 rounded-lg hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 disabled:opacity-50"
                         onClick={() =>
-                          handleFreezePatients(
+                          handleFreezePatient(
                             patient.person_id,
                             patient.reporting_month,
                             index
