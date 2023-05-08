@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Patient } from "../../types/Patient";
 import { formatDate } from "../../utils/DateUtil";
@@ -168,13 +168,14 @@ const Moh731SyncQueueComponent = () => {
   const [selectedMonth, setSelectedMonth] = useState("2020-01");
 
   const navigate = useNavigate();
+  const { user } = storage.loadData();
 
   const handleProcessPatient = async (
     personId: number,
     reportingMonth: string
   ) => {
     const payload = {
-      userId: 45,
+      userId: user?.uuid,
       reportingMonth: reportingMonth,
       patientIds: [personId],
     };
@@ -204,7 +205,6 @@ const Moh731SyncQueueComponent = () => {
     reportingMonth: string,
     index: number
   ) => {
-    const { user } = storage.loadData();
     const payload = {
       userId: user?.uuid,
       reportingMonth: reportingMonth,
@@ -222,7 +222,7 @@ const Moh731SyncQueueComponent = () => {
 
   const handleProcessAll = async () => {
     const payload = {
-      userId: 45,
+      userId: user?.uuid,
       reportingMonth: selectedMonth,
       patientIds: patientIds,
     };
@@ -233,8 +233,6 @@ const Moh731SyncQueueComponent = () => {
   };
 
   const handleFreezeAll = async () => {
-    const { user } = storage.loadData();
-
     const payload = {
       userId: user?.uuid,
       reportingMonth: selectedMonth,
