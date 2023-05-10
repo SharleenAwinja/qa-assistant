@@ -209,7 +209,8 @@ const Moh731SyncQueueComponent = () => {
 
     const result = processQueuedPatients(payload);
     await fetchMoh731SyncQueue(selectedMonth).then(setPatients);
-    console.log(result);
+``
+Ditto
   };
 
   const handleFreezeAll = async () => {
