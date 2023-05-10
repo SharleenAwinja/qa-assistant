@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { AiOutlineDelete } from 'react-icons/ai';
-import storage from '../../app/localStorage';
+import storage from '../../../app/localStorage';
 import { FaPlus } from 'react-icons/fa';
-import Header from '../layout/Header';
-import Footer from '../layout/Footer';
+import Header from '../../layout/Header';
+import Footer from '../../layout/Footer';
 import { useNavigate } from 'react-router-dom';
-import { queuePatients, setReportingMonth } from './AddPatients.resource';
-import ErrorToast from '../toasts/ErrorToast';
-import SuccessToast from '../toasts/SuccessToast';
+import { getLastDayOfMonth, queuePatients } from './AddPatients.resource';
+import ErrorToast from '../../toasts/ErrorToast';
+import SuccessToast from '../../toasts/SuccessToast';
+import Calendar from '../../calendar/Calendar.component';
+import { RequestBody } from './AddPatients';
 
 const AddPatientIdentifier = () => {
   const [patientIdentifier, setPatientIdentifier] = useState({
@@ -16,12 +18,17 @@ const AddPatientIdentifier = () => {
   const [identifiers, setIdentifiers] = useState<string[]>([]);
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [reportingMonth, setReportingMonth] = useState('2020-01');
+  const [responseBody, setResponseBody] = useState<{ affectedRows: number; existingPatients: string[] }>({
+    affectedRows: 0,
+    existingPatients: [],
+  });
 
   const navigate = useNavigate();
 
   const { identifier } = patientIdentifier;
 
-  const onChange = (e: { target: { name: any; value: any } }) => {
+  const onChange = (e: { target: { name: string; value: string } }) => {
     setPatientIdentifier({
       ...patientIdentifier,
       [e.target.name]: e.target.value,
@@ -43,48 +50,31 @@ const AddPatientIdentifier = () => {
     }
   };
 
-  const currentDate = new Date();
-  //month options
-  const monthOptions = [];
-  for (let i = 0; i < 12; i++) {
-    const month = new Date(currentDate.getFullYear(), i).toLocaleString('default', { month: 'long' });
-    monthOptions.push(
-      <option key={i} value={i + 1}>
-        {month}
-      </option>,
-    );
-  }
+  const handleMonthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setReportingMonth(event.target.value);
+  };
 
-  // year options
-  const yearOptions = [];
-  const baseYear = 2020;
-  const currentYear = currentDate.getFullYear();
-  for (let i = baseYear; i <= currentYear; i++) {
-    yearOptions.push(
-      <option key={i} value={i}>
-        {i}
-      </option>,
-    );
-  }
-
-  const deleteIdentifier = (id: any) => {
+  const deleteIdentifier = (id: string) => {
     setIdentifiers(identifiers.filter((existing) => existing !== id));
   };
 
   const handleSubmit = async () => {
-    const reportingMonth = await setReportingMonth();
-
     const { user } = storage.loadData();
     const userId = user.uuid;
 
-    const requestBody = JSON.stringify({
-      identifiers,
-      userId,
-      reportingMonth,
-    });
+    const fullReportingMonth = getLastDayOfMonth(reportingMonth);
+
+    const requestBody: RequestBody = {
+      identifiers: identifiers,
+      userId: userId,
+      reportingMonth: fullReportingMonth,
+    };
 
     const response = await queuePatients(requestBody);
+
     if (response.ok) {
+      const data = await response.json();
+      setResponseBody(data);
       setIsSuccess(true);
       setIdentifiers([]);
     } else {
@@ -96,13 +86,7 @@ const AddPatientIdentifier = () => {
       <Header shouldRenderSearchLink={false} />
       <div className="grid gap-x-4 grid-cols-1 lg:grid-cols-2 justify-center w-11/12 mx-auto ">
         <div className="pl-10 md:px-32 lg:pl-10 xl:pl-24 2xl:pl-60 mt-10 shadow-lg pb-4">
-          <div className="flex space-x-4 pt-2">
-            <h2 className="text-xl pt-1.5">Reporting Month:</h2>
-            <div className="bg-gray-200 inline-block w-auto">
-              <select className="mt-3 mb-3 ml-3 mr-3 month-dropdown">{monthOptions}</select>
-              <select className="mt-3 mb-3 ml-3 mr-3 year-dropdown">{yearOptions}</select>
-            </div>
-          </div>
+          <Calendar selectedMonth={reportingMonth} handleMonthChange={handleMonthChange} />
           <div className="mt-10">
             <h2 className="text-xl">Add identifier(s):</h2>
             <div className="mt-2">
@@ -157,6 +141,21 @@ const AddPatientIdentifier = () => {
               Submit
             </button>
           </div>
+          {isSuccess && (
+            <div className="mt-4 w-full p-4 shadow-md lg:max-w-lg mx-auto">
+              <p className="text-lg mb-2">
+                <span className="font-bold">Successfully added identifiers:</span>{' '}
+                <span className="text-lg">{responseBody.affectedRows}</span>
+              </p>
+              {responseBody.existingPatients.length && (
+                <p className="text-lg mb-2">
+                  <span className="font-bold">Existing identifiers for current reporting month:</span>{' '}
+                  <span className="text-lg">{responseBody.existingPatients.join(', ')}</span>
+                </p>
+              )}
+            </div>
+          )}
+
           {isSuccess && (
             <div className="pl-40 mt-4">
               <SuccessToast

@@ -6,14 +6,15 @@ import Footer from '../layout/Footer';
 import Header from '../layout/Header';
 import { fetchMoh731SyncQueue, freezeProcessedPatients, processQueuedPatients } from './Moh731Sync.resource';
 import storage from '../../app/localStorage';
+import Calendar from '../calendar/Calendar.component';
 
 interface searchProps {
-  handleSearch: any;
-  handleClick: any;
+  handleSearch: React.ChangeEventHandler<HTMLInputElement>;
+  handleClick: React.MouseEventHandler<HTMLButtonElement>;
   searchTerm: string;
 }
 
-const SearchBar: React.FC<searchProps> = ({ handleSearch, handleClick, searchTerm }) => {
+const SearchBar: React.FC<searchProps> = ({ handleSearch, handleClick, searchTerm }: searchProps) => {
   return (
     <>
       <label htmlFor="table-search" className="sr-only">
@@ -117,30 +118,6 @@ const Breadcrumb = () => {
   );
 };
 
-interface calendarProps {
-  selectedMonth: string;
-  handleMonthChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-const Calendar: React.FC<calendarProps> = ({ selectedMonth, handleMonthChange }) => {
-  return (
-    <div className="flex items-center mt-2 mb-3 space-x-4">
-      <label htmlFor="start" className="mb-2 font-bold text-gray-700">
-        Reporting month:
-      </label>
-      <input
-        type="month"
-        id="start"
-        name="start"
-        className="px-3 py-2 border border-gray-400 rounded-lg"
-        min="2020-01"
-        value={selectedMonth}
-        onChange={handleMonthChange}
-      />
-    </div>
-  );
-};
-
 const handleProcessPatient = (personId: number, reportingMonth: string) => {
   const payload = {
     userId: 45,
@@ -169,7 +146,7 @@ const Moh731SyncQueueComponent = () => {
     navigate('/moh-731-sync/add-patients');
   };
 
-  const handleSearchChange = (e: any) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchItem(e.target.value);
   };
 
@@ -199,7 +176,7 @@ const Moh731SyncQueueComponent = () => {
       patient.patient_name.toLowerCase().includes(searchItem.toLowerCase()),
     );
     setFilteredPatients(filtered);
-  }, [searchItem, selectedMonth]);
+  }, [searchItem, selectedMonth, patients]);
 
   const data = searchItem ? filteredPatients : patients;
 
