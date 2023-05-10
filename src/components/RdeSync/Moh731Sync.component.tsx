@@ -181,7 +181,6 @@ const Moh731SyncQueueComponent = () => {
     };
     const result = await processQueuedPatients(payload);
     await fetchMoh731SyncQueue(selectedMonth).then(setPatients);
-    console.log(result);
   };
 
   const handleMonthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
