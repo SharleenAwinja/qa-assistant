@@ -9,7 +9,7 @@ import { getLastDayOfMonth, queuePatients } from './AddPatients.resource';
 import ErrorToast from '../../toasts/ErrorToast';
 import SuccessToast from '../../toasts/SuccessToast';
 import Calendar from '../../calendar/Calendar.component';
-import { RequestBody } from './AddPatients';
+import { RequestBody } from './Model';
 
 const AddPatientIdentifier = () => {
   const [patientIdentifier, setPatientIdentifier] = useState({

@@ -1,4 +1,4 @@
-import { RequestBody } from './AddPatients';
+import { RequestBody } from './Model';
 
 export const queuePatients = async (requestBody: RequestBody) => {
   const request = JSON.stringify(requestBody);
