@@ -1,12 +1,16 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { BsPencilSquare } from 'react-icons/bs';
 import { FaWalking, FaRegCalendarAlt } from 'react-icons/fa';
+import { GiHamburgerMenu } from 'react-icons/gi';
 import { BiBandAid } from 'react-icons/bi';
 import { NavLink } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
+
 const SideNavBar = () => {
-  let activeStyle = {
+  const [open, setOpen] = useState(true);
+
+  const activeStyle = {
     color: '#2FBAF1',
     cursor: 'pointer',
   };
@@ -17,13 +21,17 @@ const SideNavBar = () => {
     return info[0].uuid;
   });
 
+  const handleToggleMenu = () => {
+    setOpen(!open);
+  };
+
   return (
     <div className="hidden md:block absolute bg-white h-screen pl-[2%] shadow-lg">
       <nav className="mt-20">
         <ul className="flex flex-col gap-10 text-xl mr-2">
           <NavLink to={`/patientInfo/${patientId}`} style={({ isActive }) => (isActive ? activeStyle : undefined)}>
             <li className="py-2 px-4 flex gap-2 items-center hover:cursor-pointer hover:shadow-md">
-              <AiOutlineInfoCircle /> Patients Info
+              <span ><AiOutlineInfoCircle /> </span>Patients Info
             </li>
           </NavLink>
           <NavLink to={`/patient/${patientId}/orders`} style={({ isActive }) => (isActive ? activeStyle : undefined)}>
@@ -44,7 +52,10 @@ const SideNavBar = () => {
               Encounters
             </li>
           </NavLink>
-          <NavLink to="/observations" style={({ isActive }) => (isActive ? activeStyle : undefined)}>
+          <NavLink
+            to={`/observations/${patientId}`}
+            style={({ isActive }) => (isActive ? activeStyle : undefined)}
+          >
             <li className="py-2 px-4 flex gap-2 items-center hover:cursor-pointer hover:shadow-md">
               <FaRegCalendarAlt />
               Observations
