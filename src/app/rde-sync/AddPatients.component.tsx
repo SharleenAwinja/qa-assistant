@@ -60,26 +60,31 @@ const AddPatientIdentifier = () => {
   };
 
   const handleSubmit = async () => {
-    const { user } = storage.loadData();
-    const userId = user.uuid;
+    try {
+      const { user } = storage.loadData();
+      const userId = user.uuid;
 
-    const fullReportingMonth = formatDateToLastDayOfMonth(reportingMonth);
+      const fullReportingMonth = formatDateToLastDayOfMonth(reportingMonth);
 
-    const requestBody: RequestBody = {
-      identifiers: identifiers,
-      userId: userId,
-      reportingMonth: fullReportingMonth,
-    };
+      const requestBody: RequestBody = {
+        identifiers: identifiers,
+        userId: userId,
+        reportingMonth: fullReportingMonth,
+      };
 
-    const response = await queuePatients(requestBody);
+      const response = await queuePatients(requestBody);
 
-    if (response.ok) {
-      const data = await response.json();
-      setResponseBody(data);
-      setIsSuccess(true);
-      setIdentifiers([]);
-    } else {
+      if (response.ok) {
+        const data = await response.json();
+        setResponseBody(data);
+        setIsSuccess(true);
+        setIdentifiers([]);
+      } else {
+        setIsError(true);
+      }
+    } catch (error) {
       setIsError(true);
+      console.error(error);
     }
   };
   return (
@@ -143,8 +148,8 @@ const AddPatientIdentifier = () => {
             </button>
           </div>
           {isSuccess && (
-            <div className="fixed inset-0 flex items-end justify-end z-50">
-              <div className="w-full sm:max-w-sm bg-blue-400 rounded-lg p-6 shadow-lg relative mr-4 mb-4 sm:mr-10 sm:mb-20">
+            <div className="fixed flex items-end justify-end right-4 bottom-4 sm:right-10 sm:bottom-20 z-50 md:z-0">
+              <div className="w-4/6 md:w-full md:max-w-sm bg-blue-400 rounded-lg p-6 shadow-lg relative">
                 <button
                   className="absolute top-0 right-0 m-2 text-black hover:text-gray-700"
                   onClick={() => setIsSuccess(false)}
@@ -173,7 +178,7 @@ const AddPatientIdentifier = () => {
             </div>
           )}
           {isSuccess && (
-            <div className="pl-40 mt-4">
+            <div className="pl-40 mt-4 z-50">
               <SuccessToast
                 message="Identifiers have been added successfully"
                 handleOnClick={() => setIsSuccess(false)}
