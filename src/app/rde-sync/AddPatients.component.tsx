@@ -5,11 +5,12 @@ import { FaPlus } from 'react-icons/fa';
 import Header from '../../components/layout/headers/HeaderWithLogo';
 import Footer from '../../components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
-import { getLastDayOfMonth, queuePatients } from './AddPatients.resource';
+import { queuePatients } from './AddPatients.resource';
 import ErrorToast from '../../components/toasts/ErrorToast';
 import SuccessToast from '../../components/toasts/SuccessToast';
-import Calendar from '../../components/calendar/Calendar';
+import CalendarComponent from '../../components/calendar/Calendar';
 import { RequestBody } from './Model';
+import { formatDateToLastDayOfMonth } from './Moh731Sync.resource';
 
 const AddPatientIdentifier = () => {
   const [patientIdentifier, setPatientIdentifier] = useState({
@@ -18,7 +19,7 @@ const AddPatientIdentifier = () => {
   const [identifiers, setIdentifiers] = useState<string[]>([]);
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [reportingMonth, setReportingMonth] = useState('2020-01');
+  const [reportingMonth, setReportingMonth] = useState<Date>(new Date(2020, 0)); // January 2020
   const [responseBody, setResponseBody] = useState<{ affectedRows: number; existingPatients: string[] }>({
     affectedRows: 0,
     existingPatients: [],
@@ -50,8 +51,8 @@ const AddPatientIdentifier = () => {
     }
   };
 
-  const handleMonthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setReportingMonth(event.target.value);
+  const handleMonthChange = (value: Date) => {
+    setReportingMonth(value);
   };
 
   const deleteIdentifier = (id: string) => {
@@ -62,7 +63,7 @@ const AddPatientIdentifier = () => {
     const { user } = storage.loadData();
     const userId = user.uuid;
 
-    const fullReportingMonth = getLastDayOfMonth(reportingMonth);
+    const fullReportingMonth = formatDateToLastDayOfMonth(reportingMonth);
 
     const requestBody: RequestBody = {
       identifiers: identifiers,
@@ -86,7 +87,7 @@ const AddPatientIdentifier = () => {
       <Header />
       <div className="grid gap-x-4 grid-cols-1 lg:grid-cols-2 justify-center w-11/12 mx-auto ">
         <div className="pl-10 md:px-32 lg:pl-10 xl:pl-24 2xl:pl-60 mt-10 shadow-lg pb-4">
-          <Calendar selectedMonth={reportingMonth} handleMonthChange={handleMonthChange} />
+          <CalendarComponent selectedMonth={reportingMonth} handleMonthChange={handleMonthChange} />
           <div className="mt-10">
             <h2 className="text-xl">Add identifier(s):</h2>
             <div className="mt-2">
